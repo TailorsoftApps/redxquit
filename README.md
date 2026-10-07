@@ -15,7 +15,11 @@ Looking for a **RedQuits alternative** that doesn't require Rosetta? Red X Quit 
 
 ## Download Red X Quit
 
-**[Download the latest version from GitHub Releases](https://github.com/TailorsoftApps/redxquit/releases/latest)**
+## Download Red X Quit
+
+**[Download Red X Quit for macOS](https://github.com/TailorsoftApps/redxquit/releases/latest/download/RedXQuit.dmg)** — Download the installer directly.
+
+**[Release Notes and Version History](https://github.com/TailorsoftApps/redxquit/releases/latest)** — View release information and previous versions.
 
 Red X Quit is signed with an Apple Developer ID certificate and notarized by Apple.
 
