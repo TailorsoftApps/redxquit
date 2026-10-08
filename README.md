@@ -39,3 +39,4 @@ Red X Quit is signed with an Apple Developer ID certificate and notarized by App
 
 Red X Quit is independently developed and is not affiliated with RedQuits.
 
+[![Red X Quit | AlternativeTo](https://alternativeto.net/static/badges/badge-wide-color.svg)](https://alternativeto.net/software/red-x-quit/about/?utm_source=badge&utm_medium=referral)
