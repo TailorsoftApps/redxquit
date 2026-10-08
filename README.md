@@ -17,13 +17,13 @@ Looking for a **RedQuits alternative** that doesn't require Rosetta? Red X Quit 
 
 **[Release Notes and Version History](https://github.com/TailorsoftApps/redxquit/releases/latest)** — View release information and previous versions.
 
-Red X Quit is signed with an Apple Developer ID certificate and notarized by Apple.
+**Red X Quit** is signed with an Apple Developer ID certificate and notarized by Apple.
 
 ## Installation
 
 1. Download and open the DMG installer.
 2. Drag RedXQuit.app to Applications.
-3. Launch Red X Quit from Applications.
+3. Launch **Red X Quit** from Applications.
 4. Grant Accessibility permission when requested.
 
 ## Privacy and Support
@@ -33,6 +33,6 @@ Red X Quit is signed with an Apple Developer ID certificate and notarized by App
 
 ---
 
-Red X Quit is independently developed and is not affiliated with RedQuits.
+**Red X Quit** is independently developed and is not affiliated with RedQuits.
 
 [![Red X Quit | AlternativeTo](https://alternativeto.net/static/badges/badge-wide-color.svg)](https://alternativeto.net/software/red-x-quit/about/?utm_source=badge&utm_medium=referral)
