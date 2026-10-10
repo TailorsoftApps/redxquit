@@ -1,0 +1,127 @@
+
+name: Weekly Download Report
+
+on:
+  schedule:
+    - cron: "0 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Generate report
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import pathlib
+          import smtplib
+          import urllib.request
+          from email.message import EmailMessage
+
+          repo = os.environ["REPOSITORY"]
+          token = os.environ["GH_TOKEN"]
+          path = pathlib.Path(".github/download-counts.json")
+
+          previous = json.loads(path.read_text()) if path.exists() else {}
+          current = {}
+          lines = ["Red X Quit - Weekly Download Report", ""]
+
+          url = f"https://api.github.com/repos/{repo}/releases?per_page=100"
+          releases = []
+
+          while url:
+              request = urllib.request.Request(url, headers={
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/vnd.github+json",
+                  "User-Agent": "RedXQuit-Download-Report"
+              })
+              with urllib.request.urlopen(request) as response:
+                  releases.extend(json.load(response))
+                  links = response.headers.get("Link", "")
+                  url = next(
+                      (part.split(";")[0].strip(" <>")
+                       for part in links.split(",")
+                       if 'rel="next"' in part), None
+                  )
+
+          total_week = 0
+          total_all = 0
+
+          for release in releases:
+              tag = release["tag_name"]
+              weekly = 0
+              cumulative = 0
+
+              for asset in release["assets"]:
+                  key = str(asset["id"])
+                  count = asset["download_count"]
+                  current[key] = count
+                  weekly += max(0, count - previous.get(key, count))
+                  cumulative += count
+
+              total_week += weekly
+              total_all += cumulative
+              lines.append(
+                  f"{tag}: Weekly {weekly:,} | Total {cumulative:,}"
+              )
+
+          lines.extend([
+              "",
+              f"Weekly downloads: {total_week:,}",
+              f"Cumulative downloads: {total_all:,}"
+          ])
+
+          if not previous:
+              lines.append(
+                  "\nInitial baseline established. "
+                  "Weekly changes begin with the next report."
+              )
+
+          report = "\n".join(lines)
+          print(report)
+
+          path.parent.mkdir(parents=True, exist_ok=True)
+          path.write_text(json.dumps(current, indent=2) + "\n")
+
+          user = os.environ.get("GMAIL_USER")
+          password = os.environ.get("GMAIL_APP_PASSWORD")
+
+          if user and password:
+              message = EmailMessage()
+              message["Subject"] = "Red X Quit - Weekly Downloads"
+              message["From"] = user
+              message["To"] = user
+              message.set_content(report)
+
+              with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+                  smtp.login(user, password)
+                  smtp.send_message(message)
+          else:
+              print("Gmail credentials not configured; email skipped.")
+          PY
+
+      - name: Save download snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .github/download-counts.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update release download counts"
+            git push
+          fi
